@@ -61,7 +61,6 @@ $(".card").on("click", function(){
                 }
            starsRating();
            $(".moves").text("Moves: "+movesCounter);
-           timer();
        }
        endGameModal()
 });
