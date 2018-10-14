@@ -16,6 +16,7 @@ function shuffle(array) {
     return array;
 }
 
+
 // shuffle cards, clears the deck html and builds new one
 function newDeck(){
     shuffle(allCards);
@@ -37,6 +38,7 @@ restart();
 let open=[];
 let countToWin=0;
 let movesCounter=0;
+let clicks=0;
 
 //event listener for a card
 $(".card").on("click", function(){
@@ -44,27 +46,38 @@ $(".card").on("click", function(){
 
         if(open.length<1){
            open.push(this);
+           clicks++
         }else if(open.length>0){
                 lastAdded=open.slice(-1)[0];
                 if(this.innerHTML===lastAdded.innerHTML){
-                    movesCounter++;
+                    clicks++
                     countToWin++;      //increases when cards match. 8 matches ends the game.
                     $(this).addClass("match");
                     $(lastAdded).addClass("match");
                     open.pop();
                 }else{
-                    movesCounter++;
+                    clicks++
                     setTimeout(function(){
                     $(this).removeClass("open show").css("pointer-events","");
                     $(lastAdded).removeClass("open show").css("pointer-events","");
                     open.pop()}.bind(this),400);
                 }
            starsRating();
-           $(".moves").text("Moves: "+movesCounter);
+           moves();
        }
        endGameModal()
+       if(clicks===1){
+         time();
+       }
 });
 
+//displays number of moves
+function moves(){
+   if((clicks>1)&&(clicks%2===0)){
+       movesCounter++;
+       $(".moves").text("Moves: "+movesCounter);
+     }
+}
 
 //displays star rating
 function starsRating(){
@@ -75,14 +88,13 @@ function starsRating(){
     }
 }
 
+
 let clock;
 //starts the timer and updates the time
-function timer(){
-  sec=0;
-  min=0;
-
-  if(movesCounter===1){
-     clock=setInterval(function(){
+function time(){
+   sec=0;
+   min=0;
+   clock=setInterval(function(){
            sec++;
            if(sec===60){
               min++;
@@ -90,13 +102,14 @@ function timer(){
            }
     $("#actual-time").text(min+" mins "+sec+" secs")
     },1000);
-  }
 }
+
+
 
 //modal that pop ups at the end of the game
 function endGameModal(){
      if(countToWin===8){
-        clearInterval(clock);
+        clearInterval(clock);  //timer stops when all cards are matched.
         star=$(".stars").clone();
         finalTime=$("#actual-time").clone();
         $(".modal").css("display","block");
@@ -112,12 +125,11 @@ function endGameModal(){
      }
 }
 
+//closes the modal
+let close=()=>{
+        $(".close").on("click",function(){
+             $(".modal").css("display","none")
+        })
+      }
 
-//closes modal
-function closeModal(){
-     $(".close").on("click",function(){
-         $(".modal").css("display","none");
-     });
-}
-
-closeModal();
+close();
